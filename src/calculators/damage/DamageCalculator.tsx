@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { calcDamage } from './formula';
 import { DEFAULT_INPUT, type DamageInput } from './types';
-import { formatGameNumber, formatPct } from '@/lib/format/number';
+import { formatGameNumber, formatPct, parseGameNumber } from '@/lib/format/number';
 import { WORLD_STAGE_OPTIONS } from '@/data/worldLimits';
 import {
   PixelButton, PixelInput, PixelCard, PixelTabs,
@@ -107,13 +107,14 @@ export function DamageCalculator() {
             <>
               <PixelInput
                 label="공격력"
-                placeholder="예: 247200000 또는 247.2M"
+                placeholder="예: 247.2G 또는 1.23T 또는 55700000"
                 value={input.attackRaw}
                 onChange={(e) => {
                   const raw = e.target.value;
-                  setInput((p) => ({ ...p, attackRaw: raw, attack: parseFloat(raw.replace(/,/g, '')) || 0 }));
+                  const parsed = parseGameNumber(raw);
+                  setInput((p) => ({ ...p, attackRaw: raw, attack: isNaN(parsed) ? 0 : parsed }));
                 }}
-                hint="게임 스펙창 표기값 그대로 입력 (K/M/G/T 없이 숫자만)"
+                hint="게임 스펙창 표기값 그대로 입력 (K, M, G, T 단위 포함 가능)"
               />
               {numInput('기본 공격 피해량', 'normalAttackDmg', '%', '스펙창 → 기본 공격 피해량 (100% = ×1.0)')}
               {numInput('일반 몬스터 피해량', 'normalMonsterDmg', '%', '일반 몬스터 대상 피해량')}
