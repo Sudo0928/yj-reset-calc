@@ -1,0 +1,10 @@
+{
+  "name": "mhtml-extract",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "여고리셋 MHTML 자료 텍스트 추출 도구 (일회성)",
+  "scripts": {
+    "extract": "node extract.mjs"
+  }
+}
