@@ -30,7 +30,7 @@ function applyAttr(base: number, attrPct: number, applied: boolean): number {
 
 // ─── 주 계산 함수 ─────────────────────────────────────────────────────────────
 
-export function calcDamage(input: DamageInput): DamageResult {
+export function calcDamage(input: DamageInput, _withSensitivity = true): DamageResult {
   const {
     attack,
     normalAttackDmg,
@@ -76,7 +76,7 @@ export function calcDamage(input: DamageInput): DamageResult {
   const isOverStatLimit = worldStatLimit !== null && currentStatLevel > worldStatLimit;
 
   // 민감도 계산 (각 항목 +1% 시 normalExpected 변화율)
-  const sensitivity = calcSensitivity(input, normalExpected);
+  const sensitivity = _withSensitivity ? calcSensitivity(input, normalExpected) : [];
 
   return {
     normalHit,
@@ -108,7 +108,7 @@ function calcSensitivity(base: DamageInput, baseResult: number): SensitivityItem
 
   for (const item of items) {
     const modified = { ...base, [item.key]: (base[item.key] as number) * 1.01 };
-    const newResult = calcDamage(modified).normalExpected;
+    const newResult = calcDamage(modified, false).normalExpected;
     item.delta = baseResult > 0 ? ((newResult - baseResult) / baseResult) * 100 : 0;
   }
 
