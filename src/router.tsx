@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
+import { MyData } from './pages/MyData';
 
 const DevGallery = lazy(() =>
   import('./pages/DevGallery').then((m) => ({ default: m.DevGallery })),
@@ -29,6 +30,7 @@ export function AppRouter() {
           <Route path="/gold" element={<WipPage title="골드 / 빛의파편 계산기" />} />
           <Route path="/chest" element={<WipPage title="상자 EV 계산기" />} />
           <Route path="/tips" element={<WipPage title="팁 / FAQ / 용어사전" />} />
+          <Route path="/my-data" element={<MyData />} />
           {import.meta.env.DEV && (
             <Route path="/dev/components" element={<DevGallery />} />
           )}
