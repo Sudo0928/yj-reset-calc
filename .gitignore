@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Tests
+coverage
+.vitest/
+
+# 게임 자료 (저작권 - 사이트에 재배포하지 않음)
+Information/
+tools/mhtml-extract/out/
+
+# Claude Code 메타
+# (.claude/ 디렉토리는 사용자 설정이므로 git에 커밋하지 않음)
+.claude/
