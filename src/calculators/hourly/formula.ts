@@ -3,12 +3,12 @@
 
 import { calcLightShard } from '@/calculators/gold/formula';
 import { LIGHT_SHARD_MULTIPLIER } from '@/data/gold';
+import { DEFAULT_ASSUMPTIONS, type AssumptionsInput } from '@/data/statsSchema';
 import type { HourlyInput, HourlyResult } from './types';
 
-const SYNTHESIS_PER_HOUR_ASSUMPTION = 4; // 평균 합성 4회/시간 가정 (사용자 보정 필요시 추후 입력)
-
-export function calcHourly(input: HourlyInput): HourlyResult {
+export function calcHourly(input: HourlyInput, assumptions: AssumptionsInput = DEFAULT_ASSUMPTIONS): HourlyResult {
   const { stats, env, mode, hoursPerDay } = input;
+  const synthPerHour = assumptions.slimeSynthPerHour;
 
   // ─── 골드 ─────────────────────────────────────────────
   let goldPerMin = 0;
@@ -53,7 +53,7 @@ export function calcHourly(input: HourlyInput): HourlyResult {
   const totalShardMult = baseShardMult * effectShardBonus;
 
   const shardPerSynthesis = (env.slimeAvgLevel * env.slimeAvgLevel) * totalShardMult;
-  const shardPerHour = shardPerSynthesis * SYNTHESIS_PER_HOUR_ASSUMPTION;
+  const shardPerHour = shardPerSynthesis * synthPerHour;
   const shardPerDay = shardPerHour * hoursPerDay;
   const shardPerWeek = shardPerDay * 7;
 

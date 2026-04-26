@@ -4,13 +4,16 @@ import { StatsForm } from '@/components/stats/StatsForm';
 import { PixelButton, PixelInput, PixelCheckbox, PixelSelect, PixelCard, PixelBadge, useToast } from '@/components/pixel';
 import { WORLD_STAGE_OPTIONS } from '@/data/worldLimits';
 import { useUserDataStore } from '@/store/userDataStore';
+import { ASSUMPTION_FIELDS, hasCustomAssumptions } from '@/data/statsSchema';
 
 export function Stats() {
-  const { stats, env, setStat, setEnv, reset, loadStats, loadEnv } = useStatsStore();
+  const { stats, env, assumptions, setStat, setEnv, setAssumption, resetAssumptions, reset, loadStats, loadEnv } = useStatsStore();
   const { addPreset } = useUserDataStore();
   const { toast } = useToast();
   const [rawValues, setRawValues] = useState<Record<string, string>>({});
   const [presetName, setPresetName] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const isCustomAssumption = hasCustomAssumptions(assumptions);
 
   const setRaw = (key: string, raw: string) => setRawValues((r) => ({ ...r, [key]: raw }));
 
@@ -130,9 +133,59 @@ export function Stats() {
 
       <StatsForm stats={stats} setStat={setStat} rawValues={rawValues} setRaw={setRaw} />
 
+      {/* ─── 고급 가정 (추정치 보정) ─── */}
+      <div style={{ marginTop: 16 }} />
+      <PixelCard
+        title={
+          <div
+            onClick={() => setShowAdvanced((v) => !v)}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <span>{showAdvanced ? '▼' : '▶'}</span>
+            <span>고급 가정 (추정치 보정)</span>
+            {isCustomAssumption ? (
+              <PixelBadge variant="pink">사용자 보정</PixelBadge>
+            ) : (
+              <PixelBadge variant="tbd">기본 추정치</PixelBadge>
+            )}
+          </div>
+        }
+      >
+        {showAdvanced && (
+          <>
+            <p style={{ fontSize: 11, color: 'var(--color-ink-muted)', lineHeight: 1.6, marginTop: 0 }}>
+              치명타 기본 배수·DPS 비중·슬라임 합성 빈도 같은 미공개 수치를 본인 측정값으로 보정.
+              모든 계산기(/hourly, /decisions, /compare, /dps)에 즉시 반영됩니다.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+              {ASSUMPTION_FIELDS.map((f) => (
+                <PixelInput
+                  key={f.key}
+                  label={f.label}
+                  type="number"
+                  value={String(assumptions[f.key])}
+                  onChange={(e) => {
+                    const n = parseFloat(e.target.value);
+                    if (!isNaN(n)) setAssumption(f.key, n);
+                  }}
+                  hint={f.hint}
+                  step={f.step}
+                  min={f.min}
+                  max={f.max}
+                />
+              ))}
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <PixelButton size="sm" variant="ghost" onClick={resetAssumptions}>가정 초기화</PixelButton>
+            </div>
+          </>
+        )}
+      </PixelCard>
+
       <div style={{ marginTop: 24, fontSize: 10, color: 'var(--color-ink-muted)', lineHeight: 1.7 }}>
         ※ 카드 효과(24종)·동료 특성·코스튬 옵션은 게임이 이미 합산값에 반영하므로 별도 입력 불필요.<br />
-        ※ 모든 입력은 자동으로 LocalStorage에 저장됩니다 (yjreset:stats).
+        ※ 모든 입력은 자동으로 LocalStorage에 저장됩니다 (yjreset:stats).<br />
+        ※ "고급 가정" 펼침 → 치명타 기본 배수·DPS 평타·스킬 비중 등 추정치를 직접 보정할 수 있습니다.
       </div>
     </div>
   );

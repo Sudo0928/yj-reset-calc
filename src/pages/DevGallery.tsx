@@ -11,13 +11,6 @@ import {
   PixelBadge,
   useToast,
 } from '@/components/pixel';
-import {
-  EquipmentSlot,
-  SkillSlot,
-  CostumeSlot,
-  CompanionSlot,
-  CardSlot,
-} from '@/components/slots';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -158,17 +151,6 @@ export function DevGallery() {
         </PixelModal>
       </Section>
 
-      <Section title="슬롯 컴포넌트 (Phase 10+ 본격 활용)">
-        <EquipmentSlot type="weapon" onSelect={() => toast('장비 슬롯 클릭')} />
-        <EquipmentSlot type="armor" onSelect={() => toast('방어구 슬롯 클릭')} />
-        <EquipmentSlot type="accessory" onSelect={() => toast('장신구 슬롯 클릭')} />
-        <SkillSlot index={0} onSelect={() => toast('스킬 1 슬롯 클릭')} />
-        <SkillSlot index={1} level={5} item={{ label: '화염구' }} onSelect={() => {}} onRemove={() => toast('스킬 제거')} />
-        <CostumeSlot index={0} onSelect={() => toast('코스튬 슬롯')} />
-        <CompanionSlot index={0} onSelect={() => toast('동료 슬롯')} />
-        <CardSlot index={0} onSelect={() => toast('카드 슬롯')} />
-        <CardSlot index={1} active item={{ label: '화염 카드' }} onSelect={() => {}} onRemove={() => toast('카드 제거')} />
-      </Section>
     </div>
   );
 }

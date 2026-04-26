@@ -2,7 +2,7 @@
 
 import { calcDps, calcSurvival } from '@/calculators/dps/formula';
 import { calcHourly } from '@/calculators/hourly/formula';
-import { STAT_FIELDS, type StatsFlat } from '@/data/statsSchema';
+import { STAT_FIELDS, DEFAULT_ASSUMPTIONS, type StatsFlat, type AssumptionsInput } from '@/data/statsSchema';
 import type { CompareInput, CompareResult, SensitivityItem } from './types';
 
 const EFFECT_KEYS = ['allDmgInc', 'goldAcq', 'totalGoldAcq', 'lightShardAcq', 'researchTimeRed', 'idleRewardTime'] as const;
@@ -16,21 +16,21 @@ const EFFECT_LABELS: Record<string, string> = {
   idleRewardTime: '방치보상 시간',
 };
 
-function calcGoldHourly(stats: StatsFlat, env: CompareInput['left']['env'], hoursPerDay: number) {
-  const r = calcHourly({ stats, env, mode: 'measured', hoursPerDay });
+function calcGoldHourly(stats: StatsFlat, env: CompareInput['left']['env'], hoursPerDay: number, assumptions: AssumptionsInput) {
+  const r = calcHourly({ stats, env, mode: 'measured', hoursPerDay }, assumptions);
   return r.goldPerHour;
 }
 
-export function calcCompare(input: CompareInput): CompareResult {
+export function calcCompare(input: CompareInput, assumptions: AssumptionsInput = DEFAULT_ASSUMPTIONS): CompareResult {
   const { left, right, hoursPerDay } = input;
 
-  const leftDps = calcDps(left.stats, left.env);
-  const rightDps = calcDps(right.stats, right.env);
+  const leftDps = calcDps(left.stats, left.env, assumptions);
+  const rightDps = calcDps(right.stats, right.env, assumptions);
   const dpsDiff = rightDps.total - leftDps.total;
   const dpsDiffPct = leftDps.total > 0 ? (dpsDiff / leftDps.total) * 100 : 0;
 
-  const leftGoldHr = calcGoldHourly(left.stats, left.env, hoursPerDay);
-  const rightGoldHr = calcGoldHourly(right.stats, right.env, hoursPerDay);
+  const leftGoldHr = calcGoldHourly(left.stats, left.env, hoursPerDay, assumptions);
+  const rightGoldHr = calcGoldHourly(right.stats, right.env, hoursPerDay, assumptions);
   const goldHrDiff = rightGoldHr - leftGoldHr;
   const goldHrDiffPct = leftGoldHr > 0 ? (goldHrDiff / leftGoldHr) * 100 : 0;
 
@@ -53,8 +53,8 @@ export function calcCompare(input: CompareInput): CompareResult {
     if (baseVal === 0) return { key: f.key, label: f.label, dpsDeltaPct: 0, goldDeltaPct: 0 };
 
     const modifiedStats = { ...left.stats, [f.key]: baseVal * 1.01 };
-    const modDps = calcDps(modifiedStats, left.env).total;
-    const modGold = calcGoldHourly(modifiedStats, left.env, hoursPerDay);
+    const modDps = calcDps(modifiedStats, left.env, assumptions).total;
+    const modGold = calcGoldHourly(modifiedStats, left.env, hoursPerDay, assumptions);
 
     return {
       key: f.key,

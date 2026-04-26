@@ -66,9 +66,10 @@ export function CompareCalculator() {
   };
   const setRaw = (key: string, raw: string) => setRawValues((r) => ({ ...r, [key]: raw }));
 
+  const { assumptions } = useStatsStore();
   const result = useMemo(
-    () => calcCompare({ left, right, hoursPerDay }),
-    [left, right, hoursPerDay],
+    () => calcCompare({ left, right, hoursPerDay }, assumptions),
+    [left, right, hoursPerDay, assumptions],
   );
 
   const handleLoadFromStore = () => {

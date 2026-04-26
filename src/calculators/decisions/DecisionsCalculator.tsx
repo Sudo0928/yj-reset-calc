@@ -1,17 +1,22 @@
 import { useState, useMemo } from 'react';
-import { calcDiamondAllocation, calcBuffBep, calcReclimb } from './formula';
+import {
+  calcDiamondAllocation, calcBuffBep, calcReclimb,
+  calcVipPackValue, calcRuneRoi, calcCostumeUpgrade, calcHeartConversion,
+  type RuneRoiInput, type CostumeUpgradeInput, type HeartConversionInput,
+} from './formula';
 import {
   DEFAULT_DIAMOND_INPUT, DEFAULT_BUFF_BEP_INPUT, DEFAULT_RECLIMB_INPUT,
   type DiamondAllocationInput, type BuffBepInput, type ReclimbInput, type ReclimbCandidate,
 } from './types';
 import { useStatsStore } from '@/store/statsStore';
 import { formatGameNumber } from '@/lib/format/number';
-import { PixelTabs, PixelCard, PixelInput, PixelBadge, PixelButton } from '@/components/pixel';
+import { PixelTabs, PixelCard, PixelInput, PixelBadge, PixelButton, PixelSelect } from '@/components/pixel';
 
 const TABS = [
   { key: 'allocation', label: '다이아 N개 분배 ROI' },
   { key: 'bep', label: '신화 버프작 BEP' },
   { key: 'reclimb', label: '재등반 ROI 비교' },
+  { key: 'packs', label: '패키지·환산' },
 ];
 
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
@@ -24,7 +29,7 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
 }
 
 function AllocationTab() {
-  const { env } = useStatsStore();
+  const { env, assumptions } = useStatsStore();
   const [input, setInput] = useState<DiamondAllocationInput>({
     ...DEFAULT_DIAMOND_INPUT,
     goldPerMinMeasured: env.measuredGoldPerMin,
@@ -35,7 +40,7 @@ function AllocationTab() {
     setInput((p) => ({ ...p, [k]: isNaN(n) ? 0 : n }));
   };
 
-  const result = useMemo(() => calcDiamondAllocation(input), [input]);
+  const result = useMemo(() => calcDiamondAllocation(input, assumptions), [input, assumptions]);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
@@ -162,6 +167,94 @@ function ReclimbTab() {
   );
 }
 
+function PacksTab() {
+  const { env } = useStatsStore();
+  const [runeInput, setRuneInput] = useState<RuneRoiInput>({
+    grade: '희귀', lockLevel: 1, expectedEffectPct: 1,
+    goldPerMinMeasured: env.measuredGoldPerMin || 100_000,
+  });
+  const [costumeInput, setCostumeInput] = useState<CostumeUpgradeInput>({
+    grade: 'R', currentLevel: 1, targetLevel: 10, ownedShards: 70,
+  });
+  const [heartInput, setHeartInput] = useState<HeartConversionInput>({
+    hearts: 1000, diamonds: 1000,
+  });
+
+  const vip = useMemo(() => calcVipPackValue(), []);
+  const runeR = useMemo(() => calcRuneRoi(runeInput), [runeInput]);
+  const costumeR = useMemo(() => calcCostumeUpgrade(costumeInput), [costumeInput]);
+  const heartR = useMemo(() => calcHeartConversion(heartInput), [heartInput]);
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 12 }}>
+      {/* VIP팩 */}
+      <PixelCard title={<>황금 VIP 팩 <PixelBadge variant="gold">30일</PixelBadge></>}>
+        <Row label="가격" value={`₩${vip.priceWon.toLocaleString()}`} />
+        <Row label="총 다이아 (매일+즉시)" value={`${vip.totalDia.toLocaleString()}`} />
+        <Row label="뽑기권 100개 다이아 환산" value={`${vip.totalTicketValueDia.toLocaleString()}`} />
+        <Row label="총 가치 (다이아)" value={`${vip.grandTotalDia.toLocaleString()}`} highlight />
+        <Row label="일일 평균" value={`${vip.perDayDia.toFixed(0)}/일`} />
+        <Row label="골획 +%" value={`+${vip.goldAcqBonusPct}%`} />
+        <p style={{ fontSize: 10, color: 'var(--color-ink-muted)', marginTop: 6, lineHeight: 1.6 }}>
+          매일 모든 던전 1회 추가 입장 + 마일리지 5%
+        </p>
+      </PixelCard>
+
+      {/* 특성 룬 ROI */}
+      <PixelCard title="특성 룬 ROI">
+        <PixelSelect
+          label="동료 등급"
+          options={[
+            { value: '일반', label: '일반' },
+            { value: '희귀', label: '희귀' },
+            { value: '영웅', label: '영웅' },
+            { value: '전설', label: '전설' },
+            { value: '신화', label: '신화' },
+          ]}
+          value={runeInput.grade}
+          onChange={(e) => setRuneInput((p) => ({ ...p, grade: e.target.value as RuneRoiInput['grade'] }))}
+        />
+        <PixelInput label="잠금 단계 (1~5)" type="number" min={1} max={5} value={String(runeInput.lockLevel)} onChange={(e) => setRuneInput((p) => ({ ...p, lockLevel: parseInt(e.target.value) || 1 }))} />
+        <PixelInput label="활성 시 효과 %" type="number" value={String(runeInput.expectedEffectPct)} onChange={(e) => setRuneInput((p) => ({ ...p, expectedEffectPct: parseFloat(e.target.value) || 0 }))} suffix="%" hint="예: 골획 +1%" />
+        <PixelInput label="현재 분당 골드" type="number" value={String(runeInput.goldPerMinMeasured)} onChange={(e) => setRuneInput((p) => ({ ...p, goldPerMinMeasured: parseFloat(e.target.value) || 0 }))} suffix="골드/분" />
+        <Row label="필요 룬" value={`${runeR.totalRunesNeeded}개`} highlight />
+        <Row label="활성 시 분당 +" value={formatGameNumber(runeR.goldGainPerMinIfActive)} />
+      </PixelCard>
+
+      {/* 코스튬 강화 ROI */}
+      <PixelCard title="코스튬 강화 ROI">
+        <PixelSelect
+          label="등급"
+          options={[
+            { value: 'R', label: 'R' }, { value: 'SR', label: 'SR' }, { value: 'SSR', label: 'SSR' },
+          ]}
+          value={costumeInput.grade}
+          onChange={(e) => setCostumeInput((p) => ({ ...p, grade: e.target.value as CostumeUpgradeInput['grade'] }))}
+        />
+        <PixelInput label="현재 레벨" type="number" value={String(costumeInput.currentLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, currentLevel: parseInt(e.target.value) || 1 }))} />
+        <PixelInput label="목표 레벨" type="number" value={String(costumeInput.targetLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, targetLevel: parseInt(e.target.value) || 1 }))} />
+        <PixelInput label="보유 빛의파편" type="number" value={String(costumeInput.ownedShards)} onChange={(e) => setCostumeInput((p) => ({ ...p, ownedShards: parseInt(e.target.value) || 0 }))} suffix="개" hint="1레벨당 7개" />
+        <Row label="필요 파편" value={`${costumeR.shardsNeeded}개`} />
+        <Row label="가능 레벨" value={`${costumeR.levelsAchievable}레벨`} />
+        <Row label="공격력 +%" value={`+${costumeR.attackGainPct.toFixed(1)}%`} highlight />
+        <Row label="생명력 +%" value={`+${costumeR.hpGainPct.toFixed(1)}%`} />
+      </PixelCard>
+
+      {/* 하트 환산 */}
+      <PixelCard title="하트 ↔ 카드뽑 환산">
+        <PixelInput label="보유 하트" type="number" value={String(heartInput.hearts)} onChange={(e) => setHeartInput((p) => ({ ...p, hearts: parseInt(e.target.value) || 0 }))} />
+        <PixelInput label="보유 다이아" type="number" value={String(heartInput.diamonds)} onChange={(e) => setHeartInput((p) => ({ ...p, diamonds: parseInt(e.target.value) || 0 }))} />
+        <Row label="하트로 뽑기" value={`${heartR.pullsFromHearts}뽑`} />
+        <Row label="다이아로 뽑기" value={`${heartR.pullsFromDia}뽑`} />
+        <Row label="하트 사용 시 절약" value={`${heartR.effectiveDiaSavings.toLocaleString()}다이아`} highlight />
+        <p style={{ fontSize: 10, color: 'var(--color-ink-muted)', marginTop: 6, lineHeight: 1.6 }}>
+          하트 1:1 = 1다이아 (광고제거 패키지 시) · 깡 3:1 = 3다이아
+        </p>
+      </PixelCard>
+    </div>
+  );
+}
+
 export function DecisionsCalculator() {
   const [tab, setTab] = useState('allocation');
   return (
@@ -171,6 +264,7 @@ export function DecisionsCalculator() {
         {tab === 'allocation' && <AllocationTab />}
         {tab === 'bep' && <BepTab />}
         {tab === 'reclimb' && <ReclimbTab />}
+        {tab === 'packs' && <PacksTab />}
       </div>
     </>
   );

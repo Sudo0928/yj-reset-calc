@@ -162,11 +162,11 @@ export function MyData() {
         />
       </div>
 
-      <PixelCard title={`커스텀 데이터 (${customData.length}개)`}>
+      {customData.length > 0 && (
+      <PixelCard title={`커스텀 데이터 (${customData.length}개) — 레거시 (Phase 8 폐기)`}>
         {customData.length === 0 ? (
           <p style={{ fontSize: 12, color: 'var(--color-ink-muted)', margin: 0 }}>
-            아직 등록된 데이터가 없습니다. 게임 내 동료·스킬·카드 수치를 직접 등록하면
-            계산기에서 자동으로 활용됩니다.
+            아직 등록된 데이터가 없습니다.
           </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -205,6 +205,7 @@ export function MyData() {
           </div>
         )}
       </PixelCard>
+      )}
 
       <div style={{ marginTop: 20 }}>
         <PixelCard title={`저장된 프리셋 (${presets.length}개)`}>

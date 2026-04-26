@@ -30,11 +30,11 @@ function Row({ label, value, highlight, sub }: { label: string; value: string; h
 }
 
 export function DpsCalculator() {
-  const { stats, env } = useStatsStore();
+  const { stats, env, assumptions } = useStatsStore();
   const [ingameDpsRaw, setIngameDpsRaw] = useState('');
   const ingameDps = parseGameNumber(ingameDpsRaw);
 
-  const dps = useMemo(() => calcDps(stats, env), [stats, env]);
+  const dps = useMemo(() => calcDps(stats, env, assumptions), [stats, env, assumptions]);
   const survival = useMemo(() => calcSurvival(stats), [stats]);
 
   const max = Math.max(dps.girl, dps.drone, dps.companion, 1);

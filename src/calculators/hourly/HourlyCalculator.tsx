@@ -21,13 +21,13 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
 }
 
 export function HourlyCalculator() {
-  const { stats, env } = useStatsStore();
+  const { stats, env, assumptions } = useStatsStore();
   const [mode, setMode] = useState<GoldMode>('measured');
   const [hoursPerDay, setHoursPerDay] = useState(24);
 
   const result = useMemo(
-    () => calcHourly({ stats, env, mode, hoursPerDay }),
-    [stats, env, mode, hoursPerDay],
+    () => calcHourly({ stats, env, mode, hoursPerDay }, assumptions),
+    [stats, env, mode, hoursPerDay, assumptions],
   );
 
   const noStats = (stats.goldAcq ?? 100) === 100 && (stats.totalGoldAcq ?? 100) === 100 && env.measuredGoldPerMin === 0 && env.killsPerMin === 0;
