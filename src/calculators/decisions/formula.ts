@@ -229,28 +229,31 @@ export interface CostumeUpgradeResult {
   attackGainPct: number;
   hpGainPct: number;
   levelsAchievable: number;
+  reachableLevel: number;
   summary: string;
 }
 
 export function calcCostumeUpgrade(input: CostumeUpgradeInput): CostumeUpgradeResult {
-  const levels = Math.max(0, input.targetLevel - input.currentLevel);
-  const shardsNeeded = costumeShardCost(input.grade, input.currentLevel, input.targetLevel);
-  const breakthroughsNeeded = breakthroughCount(input.currentLevel, input.targetLevel);
+  const from = Math.max(1, input.currentLevel);
+  const to = Math.max(from, input.targetLevel);
+  const shardsNeeded = costumeShardCost(input.grade, from, to);
+  const breakthroughsNeeded = breakthroughCount(from, to);
   const gain = LEVELUP_GAIN_BY_GRADE[input.grade];
   const canAfford = input.ownedShards >= shardsNeeded;
-  let used = 0, lv = input.currentLevel;
-  while (lv < input.targetLevel) {
+  let used = 0, lv = from;
+  while (lv < to) {
     const cost = levelupCost(input.grade, lv);
     if (used + cost > input.ownedShards) break;
     used += cost; lv++;
   }
-  const levelsAchievable = lv - input.currentLevel;
+  const levelsAchievable = lv - from;
+  const reachableLevel = from + levelsAchievable;
   const attackGainPct = levelsAchievable * gain.attackPct;
   const hpGainPct = levelsAchievable * gain.hpPct;
   const brkStr = breakthroughsNeeded > 0 ? ` · 돌파 ${breakthroughsNeeded}회 필요` : '';
   const summary = canAfford
-    ? `${input.grade} 코스튬 +${levels}레벨: 빛파편 ${shardsNeeded.toLocaleString()}개${brkStr} → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`
-    : `보유 빛파편 부족. ${levelsAchievable}레벨 강화 가능 → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`;
-  return { shardsNeeded, breakthroughsNeeded, canAfford, attackGainPct, hpGainPct, levelsAchievable, summary };
+    ? `${input.grade} 코스튬 Lv${from}→${to}: 빛파편 ${shardsNeeded.toLocaleString()}개${brkStr} → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`
+    : `보유 빛파편 부족. Lv${reachableLevel}까지 강화 가능 → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`;
+  return { shardsNeeded, breakthroughsNeeded, canAfford, attackGainPct, hpGainPct, levelsAchievable, reachableLevel, summary };
 }
 

@@ -9,7 +9,7 @@ import {
   type DiamondAllocationInput, type BuffBepInput, type ReclimbInput, type ReclimbCandidate,
 } from './types';
 import { useStatsStore } from '@/store/statsStore';
-import { formatGameNumber } from '@/lib/format/number';
+import { formatGameNumber, parseGameNumber } from '@/lib/format/number';
 import { PixelTabs, PixelCard, PixelInput, PixelBadge, PixelButton, PixelSelect } from '@/components/pixel';
 
 const TABS = [
@@ -176,6 +176,7 @@ function PacksTab() {
   const [costumeInput, setCostumeInput] = useState<CostumeUpgradeInput>({
     grade: 'R', currentLevel: 1, targetLevel: 10, ownedShards: 0,
   });
+  const [shardStr, setShardStr] = useState('');
 
   const vip = useMemo(() => calcVipPackValue(), []);
   const runeR = useMemo(() => calcRuneRoi(runeInput), [runeInput]);
@@ -227,13 +228,13 @@ function PacksTab() {
           value={costumeInput.grade}
           onChange={(e) => setCostumeInput((p) => ({ ...p, grade: e.target.value as CostumeUpgradeInput['grade'] }))}
         />
-        <PixelInput label="현재 레벨" type="number" value={String(costumeInput.currentLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, currentLevel: parseInt(e.target.value) || 1 }))} />
-        <PixelInput label="목표 레벨" type="number" value={String(costumeInput.targetLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, targetLevel: parseInt(e.target.value) || 1 }))} />
-        <PixelInput label="보유 빛의파편" type="number" value={String(costumeInput.ownedShards)} onChange={(e) => setCostumeInput((p) => ({ ...p, ownedShards: parseInt(e.target.value) || 0 }))} suffix="개" hint="Lv n 비용: SSR=15n→18n→21n… (100레벨마다 배율 +3)" />
+        <PixelInput label="현재 레벨" type="number" value={costumeInput.currentLevel === 0 ? '' : String(costumeInput.currentLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, currentLevel: parseInt(e.target.value) || 0 }))} />
+        <PixelInput label="목표 레벨" type="number" value={costumeInput.targetLevel === 0 ? '' : String(costumeInput.targetLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, targetLevel: parseInt(e.target.value) || 0 }))} />
+        <PixelInput label="보유 빛의파편" value={shardStr} onChange={(e) => { const raw = e.target.value; setShardStr(raw); const n = parseGameNumber(raw); setCostumeInput((p) => ({ ...p, ownedShards: isNaN(n) ? 0 : Math.floor(n) })); }} suffix="개" hint="100K / 1M 등 K·M·G·T 단위 입력 가능 (Lv n 비용: SSR=15n, 100Lv마다 배율 +3)" />
         <Row label="필요 파편" value={`${costumeR.shardsNeeded.toLocaleString()}개`} />
         {costumeR.breakthroughsNeeded > 0 && <Row label="필요 돌파" value={`${costumeR.breakthroughsNeeded}회`} />}
-        <Row label="가능 레벨" value={`${costumeR.levelsAchievable}레벨`} />
-        <Row label="공격력 +%" value={`+${costumeR.attackGainPct.toFixed(1)}%`} highlight />
+        <Row label="도달 가능 레벨" value={`Lv ${costumeR.reachableLevel}`} highlight />
+        <Row label="공격력 +%" value={`+${costumeR.attackGainPct.toFixed(1)}%`} />
         <Row label="생명력 +%" value={`+${costumeR.hpGainPct.toFixed(1)}%`} />
       </PixelCard>
 
