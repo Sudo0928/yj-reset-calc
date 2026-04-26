@@ -11,6 +11,7 @@ import {
   PixelSelect,
   PixelBadge,
 } from '@/components/pixel';
+import { PresetManager } from '@/components/PresetManager';
 import type { CustomDataItem } from '@/lib/storage/schema';
 
 const TYPE_OPTIONS = [
@@ -106,7 +107,7 @@ function AddItemModal({
 
 export function MyData() {
   const { user, firebaseEnabled } = useAuthStore();
-  const { customData, presets, removeCustomItem, removePreset, exportData, mergeImport } =
+  const { customData, presets, removeCustomItem, exportData, mergeImport } =
     useUserDataStore();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -209,39 +210,9 @@ export function MyData() {
 
       <div style={{ marginTop: 20 }}>
         <PixelCard title={`저장된 프리셋 (${presets.length}개)`}>
-          {presets.length === 0 ? (
-            <p style={{ fontSize: 12, color: 'var(--color-ink-muted)', margin: 0 }}>
-              저장된 프리셋이 없습니다. 계산기에서 "프리셋 저장"을 클릭하면 여기에 표시됩니다.
-            </p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {presets.map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 0',
-                    borderBottom: 'var(--border-pixel)',
-                  }}
-                >
-                  <PixelBadge variant="sky">{p.calcId}</PixelBadge>
-                  <span style={{ flex: 1, fontSize: 12, fontWeight: 700 }}>{p.name}</span>
-                  <PixelButton
-                    size="sm"
-                    variant="danger"
-                    onClick={() => {
-                      removePreset(p.id);
-                      toast('프리셋 삭제됨', 'success');
-                    }}
-                  >
-                    삭제
-                  </PixelButton>
-                </div>
-              ))}
-            </div>
-          )}
+          <PresetManager
+            emptyMessage='저장된 프리셋이 없습니다. 계산기에서 "프리셋 저장"을 클릭하면 여기에 표시됩니다.'
+          />
         </PixelCard>
       </div>
 

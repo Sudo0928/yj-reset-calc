@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useStatsStore } from '@/store/statsStore';
 import { StatsForm } from '@/components/stats/StatsForm';
+import { PresetManager } from '@/components/PresetManager';
 import { PixelButton, PixelInput, PixelCheckbox, PixelSelect, PixelCard, PixelBadge, useToast } from '@/components/pixel';
 import { WORLD_STAGE_OPTIONS } from '@/data/worldLimits';
 import { useUserDataStore } from '@/store/userDataStore';
 import { ASSUMPTION_FIELDS, hasCustomAssumptions } from '@/data/statsSchema';
 import { parseGameNumber } from '@/lib/format/number';
+import type { Preset } from '@/lib/storage/schema';
 
 export function Stats() {
   const { stats, env, assumptions, setStat, setEnv, setAssumption, resetAssumptions, reset, loadStats, loadEnv } = useStatsStore();
@@ -30,9 +32,8 @@ export function Stats() {
     setPresetName('');
   };
 
-  const handleLoadPreset = (presetId: string) => {
-    const preset = useUserDataStore.getState().presets.find((p) => p.id === presetId);
-    if (!preset || preset.calcId !== 'stats') return;
+  const handleLoadPreset = (preset: Preset) => {
+    if (preset.calcId !== 'stats') return;
     const data = preset.inputs as { stats?: Record<string, number>; env?: Record<string, unknown> };
     if (data.stats) loadStats(data.stats);
     if (data.env) loadEnv(data.env as Parameters<typeof loadEnv>[0]);
@@ -42,6 +43,7 @@ export function Stats() {
 
   const allPresets = useUserDataStore((s) => s.presets);
   const statsPresets = useMemo(() => allPresets.filter((p) => p.calcId === 'stats'), [allPresets]);
+  const [showPresetManager, setShowPresetManager] = useState(false);
 
   return (
     <div style={{ paddingTop: 24 }}>
@@ -69,15 +71,33 @@ export function Stats() {
           <PixelButton size="sm" variant="primary" onClick={handleSavePreset}>현재 빌드 저장</PixelButton>
           {statsPresets.length > 0 && (
             <PixelSelect
-              label="기존 프리셋 불러오기"
+              label="빠른 불러오기"
               options={[{ value: '', label: '— 선택 —' }, ...statsPresets.map((p) => ({ value: p.id, label: p.name }))]}
               value=""
-              onChange={(e) => e.target.value && handleLoadPreset(e.target.value)}
+              onChange={(e) => {
+                const found = statsPresets.find((p) => p.id === e.target.value);
+                if (found) handleLoadPreset(found);
+              }}
               style={{ minWidth: 160 }}
             />
           )}
           <PixelButton size="sm" variant="ghost" onClick={() => { reset(); setRawValues({}); }}>초기화</PixelButton>
         </div>
+
+        {statsPresets.length > 0 && (
+          <div style={{ marginTop: 12, paddingTop: 10, borderTop: 'var(--border-pixel)' }}>
+            <div
+              onClick={() => setShowPresetManager((v) => !v)}
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, marginBottom: 6 }}
+            >
+              <span>{showPresetManager ? '▼' : '▶'}</span>
+              <span>프리셋 관리 ({statsPresets.length}개)</span>
+            </div>
+            {showPresetManager && (
+              <PresetManager calcIdFilter="stats" onLoad={handleLoadPreset} />
+            )}
+          </div>
+        )}
       </PixelCard>
 
       <div style={{ height: 16 }} />
