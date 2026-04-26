@@ -54,8 +54,23 @@ export const useAuthStore = create<AuthState>((set) => ({
         await upsertProfile(user.uid, {
           displayName: user.displayName ?? '',
           photoURL: user.photoURL ?? '',
-          schemaVersion: 1,
+          schemaVersion: 2,
         }).catch(() => {});
+
+        // 로그인 시 클라우드에서 데이터 머지 가져오기
+        // 동적 import로 circular dependency 회피
+        try {
+          const [{ useUserDataStore }, { useStatsStore }] = await Promise.all([
+            import('./userDataStore'),
+            import('./statsStore'),
+          ]);
+          await Promise.all([
+            useUserDataStore.getState().syncFromCloud(user.uid),
+            useStatsStore.getState().syncFromCloud(user.uid),
+          ]);
+        } catch (err) {
+          console.error('cloud sync failed:', err);
+        }
       }
     });
     return unsubscribe;
