@@ -8,6 +8,8 @@ import { Damage } from './pages/Damage';
 import { Gold } from './pages/Gold';
 import { Chest } from './pages/Chest';
 import { Tips } from './pages/Tips';
+import { Stats } from './pages/Stats';
+import { Hourly } from './pages/Hourly';
 
 const DevGallery = lazy(() =>
   import('./pages/DevGallery').then((m) => ({ default: m.DevGallery })),
@@ -23,6 +25,8 @@ export function AppRouter() {
           <Route path="/gold" element={<Gold />} />
           <Route path="/chest" element={<Chest />} />
           <Route path="/tips" element={<Tips />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/hourly" element={<Hourly />} />
           <Route path="/my-data" element={<MyData />} />
           {import.meta.env.DEV && (
             <Route path="/dev/components" element={<DevGallery />} />

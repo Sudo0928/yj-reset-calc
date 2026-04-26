@@ -6,6 +6,8 @@ import { PixelButton } from '@/components/pixel';
 
 const NAV_ITEMS = [
   { to: '/', label: '홈', end: true },
+  { to: '/stats', label: '내 빌드' },
+  { to: '/hourly', label: '시간당' },
   { to: '/damage', label: '데미지' },
   { to: '/gold', label: '골드/파편' },
   { to: '/chest', label: '상자 EV' },
