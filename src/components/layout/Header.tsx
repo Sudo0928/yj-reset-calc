@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: '/stats', label: '내 빌드' },
   { to: '/hourly', label: '시간당' },
   { to: '/decisions', label: '의사결정' },
+  { to: '/compare', label: '빌드 비교' },
   { to: '/damage', label: '데미지' },
   { to: '/gold', label: '골드/파편' },
   { to: '/chest', label: '상자 EV' },
