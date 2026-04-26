@@ -12,6 +12,7 @@ import { Stats } from './pages/Stats';
 import { Hourly } from './pages/Hourly';
 import { Decisions } from './pages/Decisions';
 import { Compare } from './pages/Compare';
+import { Dps } from './pages/Dps';
 
 const DevGallery = lazy(() =>
   import('./pages/DevGallery').then((m) => ({ default: m.DevGallery })),
@@ -31,6 +32,7 @@ export function AppRouter() {
           <Route path="/hourly" element={<Hourly />} />
           <Route path="/decisions" element={<Decisions />} />
           <Route path="/compare" element={<Compare />} />
+          <Route path="/dps" element={<Dps />} />
           <Route path="/my-data" element={<MyData />} />
           {import.meta.env.DEV && (
             <Route path="/dev/components" element={<DevGallery />} />
