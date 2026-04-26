@@ -30,7 +30,8 @@ export function HourlyCalculator() {
     [stats, env, mode, hoursPerDay, assumptions],
   );
 
-  const noStats = (stats.goldAcq ?? 100) === 100 && (stats.totalGoldAcq ?? 100) === 100 && env.measuredGoldPerMin === 0 && env.killsPerMin === 0;
+  // "측정값 없음" 판정: 두 모드 모두 입력 0인 경우만 (default 100% 유지해도 빌드 입력 가능)
+  const noStats = env.measuredGoldPerMin === 0 && (env.killsPerMin === 0 || env.goldPerKill === 0);
 
   return (
     <div>

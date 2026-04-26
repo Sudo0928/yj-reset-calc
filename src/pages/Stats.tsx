@@ -134,7 +134,7 @@ export function Stats() {
             hint="절전모드 화면 측정값 (예: 247.2K)"
           />
           <PixelInput
-            label="몹 1마리당 골드"
+            label="몹 1마리당 골드 (기본값)"
             inputMode="decimal"
             value={env.goldPerKill === 0 ? '' : String(env.goldPerKill)}
             onChange={(e) => {
@@ -142,7 +142,7 @@ export function Stats() {
               setEnv('goldPerKill', isNaN(n) ? 0 : n);
             }}
             suffix="골드"
-            hint="DPS×처치수 모드 보조 (K 단위 가능)"
+            hint="DPS×처치수 모드용. 골획·전골획 100% 기준 측정값을 입력하면 골획%/전골획% 변경 시 효과 비교 가능"
           />
           <PixelInput
             label="슬라임 평균 레벨"

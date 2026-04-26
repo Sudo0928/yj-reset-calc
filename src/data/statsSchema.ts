@@ -109,6 +109,7 @@ export interface AssumptionsInput {
   critBaseMultiplier: number;          // 여고생 치명타 기본 배수 (기본 1.5)
   droneCritBaseMultiplier: number;     // 드론 치명타 기본 배수 (기본 1.5)
   companionCritBaseMultiplier: number; // 동료 치명타 기본 배수 (기본 1.5)
+  droneAttackPerSec: number;           // 드론 공격 빈도 (기본 1.0회/초, 인게임 미표기)
   skillVsNormalRatio: number;          // DPS 평타:스킬 비중 (0~1, 기본 0.5 = 50:50)
   slimeSynthPerHour: number;           // 시간당 슬라임 합성 횟수 (기본 4)
   premiumDailySavedMin: number;        // 광고제거 일일 시간 절약 분 (기본 120 = 4상자×30분)
@@ -119,6 +120,7 @@ export const DEFAULT_ASSUMPTIONS: AssumptionsInput = {
   critBaseMultiplier: 1.5,
   droneCritBaseMultiplier: 1.5,
   companionCritBaseMultiplier: 1.5,
+  droneAttackPerSec: 1.0,
   skillVsNormalRatio: 0.5,
   slimeSynthPerHour: 4,
   premiumDailySavedMin: 120,
@@ -145,6 +147,7 @@ export const ASSUMPTION_FIELDS: AssumptionFieldDef[] = [
   { key: 'critBaseMultiplier',          label: '치명타 기본 배수 (여고생)', hint: '게임 미확인. 기본 1.5 = 치명타 시 150% 피해. 인게임 표기 확인 시 보정', step: 0.1, min: 1, max: 3 },
   { key: 'droneCritBaseMultiplier',     label: '치명타 기본 배수 (드론)',   hint: '드론용 추정값. 1.5 동일하게 둠', step: 0.1, min: 1, max: 3 },
   { key: 'companionCritBaseMultiplier', label: '치명타 기본 배수 (동료)',   hint: '동료용 추정값', step: 0.1, min: 1, max: 3 },
+  { key: 'droneAttackPerSec',           label: '드론 공격 빈도 (회/초)',    hint: '인게임 미표기. 기본 1회/초 추정', step: 0.1, min: 0, max: 5 },
   { key: 'skillVsNormalRatio',          label: 'DPS 스킬 비중',             hint: '0=평타만, 1=스킬만, 0.5=50:50. 스킬 발동 빈도 추정', step: 0.05, min: 0, max: 1 },
   { key: 'slimeSynthPerHour',           label: '시간당 슬라임 합성 횟수',   hint: '본인 측정값으로 보정. 기본 4회/h', step: 0.5, min: 0 },
   { key: 'premiumDailySavedMin',        label: '광제 일일 절약 시간 (분)',  hint: '하루 평균 상자 N개 × 30분. 본인 사용 패턴 반영', step: 30, min: 0 },

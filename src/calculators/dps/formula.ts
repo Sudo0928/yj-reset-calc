@@ -3,8 +3,6 @@
 
 import { DEFAULT_ASSUMPTIONS, type StatsFlat, type EnvInput, type AssumptionsInput } from '@/data/statsSchema';
 
-const DRONE_DEFAULT_ATTACK_SPEED = 1.0; // 회/초 추정 (드론 공속 필드 미존재)
-
 interface DpsBreakdown {
   girl: number;
   drone: number;
@@ -59,7 +57,7 @@ function calcDroneDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput): num
   const critMult = a.droneCritBaseMultiplier + (stats.droneCritDmg ?? 0) / 100;
   const expectedMultiplier = (1 - critRate) + critRate * critMult;
 
-  return atk * finalMult * expectedMultiplier * DRONE_DEFAULT_ATTACK_SPEED;
+  return atk * finalMult * expectedMultiplier * a.droneAttackPerSec;
 }
 
 // ─── 동료 DPS ───────────────────────────────────────────
