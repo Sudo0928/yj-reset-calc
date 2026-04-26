@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 import { MyData } from './pages/MyData';
 import { Damage } from './pages/Damage';
+import { Gold } from './pages/Gold';
 
 const DevGallery = lazy(() =>
   import('./pages/DevGallery').then((m) => ({ default: m.DevGallery })),
@@ -28,7 +29,7 @@ export function AppRouter() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/damage" element={<Damage />} />
-          <Route path="/gold" element={<WipPage title="골드 / 빛의파편 계산기" />} />
+          <Route path="/gold" element={<Gold />} />
           <Route path="/chest" element={<WipPage title="상자 EV 계산기" />} />
           <Route path="/tips" element={<WipPage title="팁 / FAQ / 용어사전" />} />
           <Route path="/my-data" element={<MyData />} />
