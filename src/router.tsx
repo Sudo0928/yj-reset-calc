@@ -6,21 +6,12 @@ import { NotFound } from './pages/NotFound';
 import { MyData } from './pages/MyData';
 import { Damage } from './pages/Damage';
 import { Gold } from './pages/Gold';
+import { Chest } from './pages/Chest';
+import { Tips } from './pages/Tips';
 
 const DevGallery = lazy(() =>
   import('./pages/DevGallery').then((m) => ({ default: m.DevGallery })),
 );
-
-function WipPage({ title }: { title: string }) {
-  return (
-    <div style={{ padding: '32px 0' }}>
-      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>{title}</h1>
-      <p style={{ color: 'var(--color-ink-muted)', fontSize: 13 }}>
-        이 계산기는 현재 개발 중입니다. 게임 데이터가 준비되면 활성화됩니다.
-      </p>
-    </div>
-  );
-}
 
 export function AppRouter() {
   return (
@@ -30,8 +21,8 @@ export function AppRouter() {
           <Route path="/" element={<Home />} />
           <Route path="/damage" element={<Damage />} />
           <Route path="/gold" element={<Gold />} />
-          <Route path="/chest" element={<WipPage title="상자 EV 계산기" />} />
-          <Route path="/tips" element={<WipPage title="팁 / FAQ / 용어사전" />} />
+          <Route path="/chest" element={<Chest />} />
+          <Route path="/tips" element={<Tips />} />
           <Route path="/my-data" element={<MyData />} />
           {import.meta.env.DEV && (
             <Route path="/dev/components" element={<DevGallery />} />
