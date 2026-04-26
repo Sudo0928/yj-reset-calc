@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useStatsStore } from '@/store/statsStore';
 import { StatsForm } from '@/components/stats/StatsForm';
 import { PixelButton, PixelInput, PixelCheckbox, PixelSelect, PixelCard, PixelBadge, useToast } from '@/components/pixel';
@@ -36,7 +36,8 @@ export function Stats() {
     toast(`"${preset.name}" 불러옴`, 'success');
   };
 
-  const statsPresets = useUserDataStore((s) => s.presets.filter((p) => p.calcId === 'stats'));
+  const allPresets = useUserDataStore((s) => s.presets);
+  const statsPresets = useMemo(() => allPresets.filter((p) => p.calcId === 'stats'), [allPresets]);
 
   return (
     <div style={{ paddingTop: 24 }}>

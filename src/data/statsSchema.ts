@@ -30,8 +30,7 @@ export const STAT_FIELDS: StatFieldDef[] = [
   { key: 'hp',               group: 'girl', label: '생명력',           isLargeNumber: true,  defaultValue: 0 },
   { key: 'recovery',         group: 'girl', label: '회복력',           isLargeNumber: true,  defaultValue: 0,  hint: '0.5초당 자가 회복량' },
   { key: 'totalHpInc',       group: 'girl', label: '전체 생명력 증가', suffix: '%',          defaultValue: 0 },
-  // 'totalRecoveryInc'는 14번째이지만 여고생 그룹 마지막
-  // (전체 생명력 증가 다음에 전체 회복력 증가)
+  { key: 'totalRecoveryInc', group: 'girl', label: '전체 회복력 증가', suffix: '%',          defaultValue: 0 },
 
   // ─── 드론 (5) ─────────────────────────────────────────────
   { key: 'droneAttack',         group: 'drone', label: '드론 공격력',         isLargeNumber: true, defaultValue: 0 },
@@ -58,13 +57,6 @@ export const STAT_FIELDS: StatFieldDef[] = [
   { key: 'researchTimeRed',   group: 'effect', label: '연구 시간 감소',    suffix: '%', defaultValue: 0 },
   { key: 'idleRewardTime',    group: 'effect', label: '방치 보상 시간',    suffix: '%', defaultValue: 100 },
 ];
-
-// 14번째 여고생 필드 (전체 회복력 증가) 누락 보완
-STAT_FIELDS.splice(
-  STAT_FIELDS.findIndex((f) => f.key === 'totalHpInc') + 1,
-  0,
-  { key: 'totalRecoveryInc', group: 'girl', label: '전체 회복력 증가', suffix: '%', defaultValue: 0 },
-);
 
 export type StatKey = typeof STAT_FIELDS[number]['key'];
 
