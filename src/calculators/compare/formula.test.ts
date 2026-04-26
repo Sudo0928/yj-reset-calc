@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { calcCompare } from './formula';
 import { DEFAULT_STATS, DEFAULT_ENV, type StatsFlat } from '@/data/statsSchema';
 
-const baseLeft = { stats: { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 1, normalMonsterDmg: 110, allDmgInc: 101, critDmg: 50 } as StatsFlat, env: { ...DEFAULT_ENV, measuredGoldPerMin: 100_000 } };
+const baseLeft = { stats: { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 100, normalMonsterDmg: 110, allDmgInc: 101, critDmg: 50 } as StatsFlat, env: { ...DEFAULT_ENV, measuredGoldPerMin: 100_000 } };
 
 describe('calcCompare — 빌드 비교', () => {
   it('좌=우면 모든 차이 0', () => {

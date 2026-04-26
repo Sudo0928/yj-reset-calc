@@ -3,7 +3,7 @@
 
 import { DEFAULT_ASSUMPTIONS, type StatsFlat, type EnvInput, type AssumptionsInput } from '@/data/statsSchema';
 
-const DRONE_DEFAULT_ATTACK_SPEED = 1.0; // 1초/회 추정 (사용자 보정 필요시 별도 필드)
+const DRONE_DEFAULT_ATTACK_SPEED = 1.0; // 회/초 추정 (드론 공속 필드 미존재)
 
 interface DpsBreakdown {
   girl: number;
@@ -35,15 +35,18 @@ function calcGirlDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput): numb
   const critMult = a.critBaseMultiplier + (stats.critDmg ?? 50) / 100;
   const expectedMultiplier = (1 - critRate) + critRate * critMult;
 
-  // 공격속도 (회/초)
-  const aspd = stats.attackSpeed ?? 1;
+  // 공격속도 % → 배율 (100% = 1.0회/초 기본)
+  const aspdMult = (stats.attackSpeed ?? 100) / 100;
 
-  return atk * avgMult * expectedMultiplier * aspd;
+  return atk * avgMult * expectedMultiplier * aspdMult;
 }
 
 // ─── 드론 DPS ───────────────────────────────────────────
 function calcDroneDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput): number {
-  const atk = stats.droneAttack ?? 0;
+  // 드론 공격력은 여고생 공격력 대비 % (사용자 입력값 그대로)
+  const droneAttackPct = stats.droneAttack ?? 0;
+  const baseAtk = stats.attack ?? 0;
+  const atk = baseAtk * (droneAttackPct / 100);
   if (atk <= 0) return 0;
 
   const monsterDmg = env.isBoss ? (stats.droneBossMonDmg ?? 0) : (stats.droneNormalMonDmg ?? 0);
@@ -61,7 +64,10 @@ function calcDroneDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput): num
 
 // ─── 동료 DPS ───────────────────────────────────────────
 function calcCompanionDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput): number {
-  const atk = stats.compAttack ?? 0;
+  // 동료 공격력은 여고생 공격력 대비 % (예: +266%)
+  const compAttackPct = stats.compAttack ?? 0;
+  const baseAtk = stats.attack ?? 0;
+  const atk = baseAtk * (compAttackPct / 100);
   if (atk <= 0) return 0;
 
   const monsterDmg = env.isBoss ? (stats.compBossMonDmg ?? 0) : (stats.compNormalMonDmg ?? 0);
@@ -77,9 +83,10 @@ function calcCompanionDps(stats: StatsFlat, env: EnvInput, a: AssumptionsInput):
   const critMult = a.companionCritBaseMultiplier + (stats.compCritDmg ?? 0) / 100;
   const expectedMultiplier = (1 - critRate) + critRate * critMult;
 
-  const aspd = stats.compAttackSpeed ?? 1;
+  // 동료 공격속도 % → 배율 (100% = 1.0회/초)
+  const aspdMult = (stats.compAttackSpeed ?? 100) / 100;
 
-  return atk * compDmg * finalMult * doubleShotMult * expectedMultiplier * aspd;
+  return atk * compDmg * finalMult * doubleShotMult * expectedMultiplier * aspdMult;
 }
 
 // ─── 통합 DPS ───────────────────────────────────────────

@@ -95,25 +95,25 @@ export function DpsCalculator() {
 
         <PixelCard title="여고생 세부 (Phase 3 데미지편)">
           <Row label="공격력" value={formatGameNumber(stats.attack ?? 0)} />
-          <Row label="공격속도" value={`${stats.attackSpeed ?? 1}회/초`} />
+          <Row label="공격속도" value={`${stats.attackSpeed ?? 100}%`} />
           <Row label="치명타 확률" value={`${stats.critRate ?? 0}%`} />
           <Row label="치명타 피해량 (+50% 기본)" value={`+${stats.critDmg ?? 50}%`} />
         </PixelCard>
 
         <PixelCard title="드론 세부 (추정 모델)">
-          <Row label="드론 공격력" value={formatGameNumber(stats.droneAttack ?? 0)} />
+          <Row label="드론 공격력 (여고생 대비)" value={`${stats.droneAttack ?? 0}%`} />
           <Row label="드론 치명 확률" value={`${stats.droneCritRate ?? 0}%`} />
           <Row label="드론 치명피해" value={`${stats.droneCritDmg ?? 0}%`} />
           <p style={{ fontSize: 10, color: 'var(--color-ink-muted)', marginTop: 6, lineHeight: 1.6 }}>
-            ※ 드론 공격속도 1초/회 추정 (인게임 표기 시 사용자 보정 필요)
+            ※ 드론 공격속도 1회/초 추정 (인게임 미표기)
           </p>
         </PixelCard>
 
         <PixelCard title="동료 세부">
-          <Row label="동료 공격력" value={formatGameNumber(stats.compAttack ?? 0)} />
+          <Row label="동료 공격력 (여고생 대비)" value={`${stats.compAttack ?? 0}%`} />
           <Row label="동료 피해량" value={`${stats.compDmg ?? 100}%`} />
           <Row label="더블샷 확률" value={`${stats.compDoubleShot ?? 0}%`} />
-          <Row label="동료 공격속도" value={`${stats.compAttackSpeed ?? 1}회/초`} />
+          <Row label="동료 공격속도" value={`${stats.compAttackSpeed ?? 100}%`} />
         </PixelCard>
       </div>
 

@@ -8,8 +8,8 @@ export interface StatFieldDef {
   key: string;
   label: string;
   group: StatGroup;
-  suffix?: string;       // '%' 또는 '초' 등
-  isLargeNumber?: boolean; // K/M/G/T 단위 입력 가능
+  suffix?: string;       // '%', '시간', '회/초' 등
+  isLargeNumber?: boolean; // 사용자 안내용 (예: 공격력 247.2G). 단, 모든 필드는 parseGameNumber로 K/M/G/T 입력 가능
   defaultValue: number;
   hint?: string;
 }
@@ -17,7 +17,7 @@ export interface StatFieldDef {
 export const STAT_FIELDS: StatFieldDef[] = [
   // ─── 여고생 (14) ──────────────────────────────────────────
   { key: 'attack',           group: 'girl', label: '공격력',           isLargeNumber: true,  defaultValue: 0,  hint: '인게임 스펙창 → 공격력 (예: 247.2G)' },
-  { key: 'attackSpeed',      group: 'girl', label: '공격속도',         suffix: '회/초',      defaultValue: 1,  hint: '초당 평타 횟수' },
+  { key: 'attackSpeed',      group: 'girl', label: '공격속도',         suffix: '%',          defaultValue: 100, hint: '인게임 표기 % (100% = 기본 속도)' },
   { key: 'moveSpeed',        group: 'girl', label: '이동속도',         suffix: '%',          defaultValue: 100, hint: '100% = 기본' },
   { key: 'evasion',          group: 'girl', label: '회피율',           suffix: '%',          defaultValue: 0 },
   { key: 'normalAttackDmg',  group: 'girl', label: '기본 공격 피해량', suffix: '%',          defaultValue: 100, hint: '100% = ×1.0' },
@@ -33,29 +33,29 @@ export const STAT_FIELDS: StatFieldDef[] = [
   { key: 'totalRecoveryInc', group: 'girl', label: '전체 회복력 증가', suffix: '%',          defaultValue: 0 },
 
   // ─── 드론 (5) ─────────────────────────────────────────────
-  { key: 'droneAttack',         group: 'drone', label: '드론 공격력',         isLargeNumber: true, defaultValue: 0 },
+  { key: 'droneAttack',         group: 'drone', label: '드론 공격력',         suffix: '%',         defaultValue: 0,  hint: '여고생 공격력 대비 % (인게임 표기 그대로)' },
   { key: 'droneCritRate',       group: 'drone', label: '드론 치명타 확률',    suffix: '%',         defaultValue: 0 },
   { key: 'droneCritDmg',        group: 'drone', label: '드론 치명타 피해량',  suffix: '%',         defaultValue: 0 },
   { key: 'droneNormalMonDmg',   group: 'drone', label: '드론 일반 몬스터 피해량', suffix: '%',     defaultValue: 0 },
   { key: 'droneBossMonDmg',     group: 'drone', label: '드론 보스 몬스터 피해량', suffix: '%',     defaultValue: 0 },
 
   // ─── 동료 (8) ─────────────────────────────────────────────
-  { key: 'compAttack',         group: 'companion', label: '동료 공격력',         isLargeNumber: true, defaultValue: 0 },
-  { key: 'compAttackSpeed',    group: 'companion', label: '동료 공격속도',       suffix: '회/초',     defaultValue: 1 },
+  { key: 'compAttack',         group: 'companion', label: '동료 공격력',         suffix: '%',         defaultValue: 0,   hint: '동료별 능력치 % (예: +266%)' },
+  { key: 'compAttackSpeed',    group: 'companion', label: '동료 공격속도',       suffix: '%',         defaultValue: 100, hint: '인게임 표기 % (100% = 기본)' },
   { key: 'compDmg',            group: 'companion', label: '동료 피해량',         suffix: '%',         defaultValue: 100 },
   { key: 'compDoubleShot',     group: 'companion', label: '동료 더블샷 확률',    suffix: '%',         defaultValue: 0 },
-  { key: 'compCritRate',       group: 'companion', label: '동료 치명타 확률',    suffix: '%',         defaultValue: 0 },
-  { key: 'compCritDmg',        group: 'companion', label: '동료 치명타 피해량',  suffix: '%',         defaultValue: 0 },
+  { key: 'compCritRate',       group: 'companion', label: '동료 치명타 확률',    suffix: '%',         defaultValue: 0,   hint: '동료별 능력치 %' },
+  { key: 'compCritDmg',        group: 'companion', label: '동료 치명타 피해량',  suffix: '%',         defaultValue: 0,   hint: '동료별 능력치 %' },
   { key: 'compNormalMonDmg',   group: 'companion', label: '동료 일반 몬스터 피해량', suffix: '%',     defaultValue: 0 },
   { key: 'compBossMonDmg',     group: 'companion', label: '동료 보스 몬스터 피해량', suffix: '%',     defaultValue: 0 },
 
   // ─── 효과 (6) ─────────────────────────────────────────────
-  { key: 'allDmgInc',         group: 'effect', label: '모든 피해량 증가',  suffix: '%', defaultValue: 100 },
-  { key: 'goldAcq',           group: 'effect', label: '골드 획득량',       suffix: '%', defaultValue: 100 },
-  { key: 'totalGoldAcq',      group: 'effect', label: '전체 골드 획득량',  suffix: '%', defaultValue: 100 },
+  { key: 'allDmgInc',         group: 'effect', label: '모든 피해량 증가',  suffix: '%',  defaultValue: 100 },
+  { key: 'goldAcq',           group: 'effect', label: '골드 획득량',       suffix: '%',  defaultValue: 100 },
+  { key: 'totalGoldAcq',      group: 'effect', label: '전체 골드 획득량',  suffix: '%',  defaultValue: 100 },
   { key: 'lightShardAcq',     group: 'effect', label: '빛의파편 획득량 증가', suffix: '%', defaultValue: 0 },
-  { key: 'researchTimeRed',   group: 'effect', label: '연구 시간 감소',    suffix: '%', defaultValue: 0 },
-  { key: 'idleRewardTime',    group: 'effect', label: '방치 보상 시간',    suffix: '%', defaultValue: 100 },
+  { key: 'researchTimeRed',   group: 'effect', label: '연구 시간 감소',    suffix: '%',  defaultValue: 0 },
+  { key: 'idleRewardTime',    group: 'effect', label: '방치 보상 시간',    suffix: '시간', defaultValue: 24, hint: '하루 받을 수 있는 방치 보상 시간 (24 = 풀방치)' },
 ];
 
 export type StatKey = typeof STAT_FIELDS[number]['key'];

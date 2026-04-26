@@ -23,36 +23,24 @@ function FieldInput({
   onChange: (v: number) => void;
   onRawChange?: (s: string) => void;
 }) {
-  if (field.isLargeNumber) {
-    return (
-      <PixelInput
-        label={field.label}
-        placeholder="예: 247.2G"
-        value={raw ?? (value === 0 ? '' : String(value))}
-        onChange={(e) => {
-          const r = e.target.value;
-          onRawChange?.(r);
-          const n = parseGameNumber(r);
-          onChange(isNaN(n) ? 0 : n);
-        }}
-        hint={field.hint}
-        suffix={field.suffix}
-      />
-    );
-  }
+  // 모든 필드는 K/M/G/T 단위 입력 가능 (parseGameNumber 사용)
+  // raw는 사용자가 친 그대로 보존, onChange로 숫자 값 전달
+  const placeholder = field.isLargeNumber ? '예: 247.2G' : (field.defaultValue === 100 ? '100' : '0');
+  const display = raw !== undefined ? raw : (value === 0 || value === field.defaultValue ? '' : String(value));
   return (
     <PixelInput
       label={field.label}
-      type="number"
-      inputMode="decimal"
-      value={value === 0 ? '' : String(value)}
+      placeholder={placeholder}
+      value={display}
       onChange={(e) => {
-        const n = parseFloat(e.target.value);
+        const r = e.target.value;
+        onRawChange?.(r);
+        const n = parseGameNumber(r);
         onChange(isNaN(n) ? 0 : n);
       }}
-      placeholder="0"
       hint={field.hint}
       suffix={field.suffix}
+      inputMode="decimal"
     />
   );
 }

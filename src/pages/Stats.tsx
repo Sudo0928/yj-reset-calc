@@ -5,6 +5,7 @@ import { PixelButton, PixelInput, PixelCheckbox, PixelSelect, PixelCard, PixelBa
 import { WORLD_STAGE_OPTIONS } from '@/data/worldLimits';
 import { useUserDataStore } from '@/store/userDataStore';
 import { ASSUMPTION_FIELDS, hasCustomAssumptions } from '@/data/statsSchema';
+import { parseGameNumber } from '@/lib/format/number';
 
 export function Stats() {
   const { stats, env, assumptions, setStat, setEnv, setAssumption, resetAssumptions, reset, loadStats, loadEnv } = useStatsStore();
@@ -92,27 +93,36 @@ export function Stats() {
           />
           <PixelInput
             label="분당 몬스터 처치수"
-            type="number"
+            inputMode="decimal"
             value={env.killsPerMin === 0 ? '' : String(env.killsPerMin)}
-            onChange={(e) => setEnv('killsPerMin', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const n = parseGameNumber(e.target.value);
+              setEnv('killsPerMin', isNaN(n) ? 0 : n);
+            }}
             suffix="회/분"
-            hint="DPS×처치수 모드용"
+            hint="DPS×처치수 모드용 (K/M 단위 가능)"
           />
           <PixelInput
             label="분당 측정 골드"
-            type="number"
+            inputMode="decimal"
             value={env.measuredGoldPerMin === 0 ? '' : String(env.measuredGoldPerMin)}
-            onChange={(e) => setEnv('measuredGoldPerMin', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const n = parseGameNumber(e.target.value);
+              setEnv('measuredGoldPerMin', isNaN(n) ? 0 : n);
+            }}
             suffix="골드/분"
-            hint="절전모드 화면 측정값"
+            hint="절전모드 화면 측정값 (예: 247.2K)"
           />
           <PixelInput
             label="몹 1마리당 골드"
-            type="number"
+            inputMode="decimal"
             value={env.goldPerKill === 0 ? '' : String(env.goldPerKill)}
-            onChange={(e) => setEnv('goldPerKill', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const n = parseGameNumber(e.target.value);
+              setEnv('goldPerKill', isNaN(n) ? 0 : n);
+            }}
             suffix="골드"
-            hint="DPS×처치수 모드 보조"
+            hint="DPS×처치수 모드 보조 (K 단위 가능)"
           />
           <PixelInput
             label="슬라임 평균 레벨"

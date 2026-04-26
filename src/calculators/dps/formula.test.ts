@@ -5,7 +5,7 @@ import { DEFAULT_STATS, DEFAULT_ENV, type StatsFlat } from '@/data/statsSchema';
 const baseStats: StatsFlat = {
   ...DEFAULT_STATS,
   attack: 100_000,
-  attackSpeed: 1,
+  attackSpeed: 100,        // 100% = 1.0배 (인게임 표기)
   normalAttackDmg: 100,
   skillDmg: 100,
   normalMonsterDmg: 110,
@@ -42,10 +42,10 @@ describe('calcDps — 여고생/드론/동료 DPS 분해', () => {
     expect(boss.girl).toBeGreaterThan(normal.girl);
   });
 
-  it('드론 활성화 시 drone 비중 > 0', () => {
+  it('드론 활성화 시 drone 비중 > 0 (드론 공격력은 여고생 대비 %)', () => {
     const stats: StatsFlat = {
       ...baseStats,
-      droneAttack: 50_000,
+      droneAttack: 50,         // 여고생 공격력의 50%
       droneNormalMonDmg: 200,
     };
     const r = calcDps(stats, DEFAULT_ENV);
@@ -54,10 +54,11 @@ describe('calcDps — 여고생/드론/동료 DPS 분해', () => {
     expect(r.girlPct + r.dronePct + r.companionPct).toBeCloseTo(100);
   });
 
-  it('동료 더블샷 100%면 동료 DPS 2배', () => {
+  it('동료 더블샷 100%면 동료 DPS 2배 (compAttack은 여고생 대비 %)', () => {
     const stats1: StatsFlat = {
       ...baseStats,
-      compAttack: 50_000,
+      compAttack: 50,           // 여고생 공격력의 50%
+      compAttackSpeed: 100,     // 100% = 1.0회/초
       compNormalMonDmg: 100,
       compDoubleShot: 0,
     };
@@ -70,9 +71,10 @@ describe('calcDps — 여고생/드론/동료 DPS 분해', () => {
   it('합산 = 부분의 합', () => {
     const stats: StatsFlat = {
       ...baseStats,
-      droneAttack: 50_000,
+      droneAttack: 50,
       droneNormalMonDmg: 100,
-      compAttack: 30_000,
+      compAttack: 30,
+      compAttackSpeed: 100,
       compNormalMonDmg: 100,
     };
     const r = calcDps(stats, DEFAULT_ENV);

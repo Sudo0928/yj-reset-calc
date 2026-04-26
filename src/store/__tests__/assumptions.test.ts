@@ -15,21 +15,21 @@ describe('assumptions — 회귀 + 가변성', () => {
   });
 
   it('calcDps: assumptions 미지정 시 default와 동일', () => {
-    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 1, normalAttackDmg: 100, normalMonsterDmg: 110, allDmgInc: 101, critRate: 50, critDmg: 50 };
+    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 100, normalAttackDmg: 100, normalMonsterDmg: 110, allDmgInc: 101, critRate: 50, critDmg: 50 };
     const a = calcDps(stats, DEFAULT_ENV);
     const b = calcDps(stats, DEFAULT_ENV, DEFAULT_ASSUMPTIONS);
     expect(a.total).toBeCloseTo(b.total);
   });
 
   it('calcDps: critBaseMultiplier 1.5 → 2.0 변경 시 치명타 50% 빌드 DPS 상승', () => {
-    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 1, normalAttackDmg: 100, normalMonsterDmg: 110, allDmgInc: 101, critRate: 50, critDmg: 50 };
+    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 100, normalAttackDmg: 100, normalMonsterDmg: 110, allDmgInc: 101, critRate: 50, critDmg: 50 };
     const base = calcDps(stats, DEFAULT_ENV);
     const buffed = calcDps(stats, DEFAULT_ENV, { ...DEFAULT_ASSUMPTIONS, critBaseMultiplier: 2.0 });
     expect(buffed.total).toBeGreaterThan(base.total);
   });
 
   it('calcDps: skillVsNormalRatio 0.5 → 0 (평타만) 시 평타 mult 100% 사용', () => {
-    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 1, normalAttackDmg: 200, skillDmg: 100, normalMonsterDmg: 100, allDmgInc: 100 };
+    const stats = { ...DEFAULT_STATS, attack: 100_000, attackSpeed: 100, normalAttackDmg: 200, skillDmg: 100, normalMonsterDmg: 100, allDmgInc: 100 };
     const ratio0 = calcDps(stats, DEFAULT_ENV, { ...DEFAULT_ASSUMPTIONS, skillVsNormalRatio: 0 });
     const ratio1 = calcDps(stats, DEFAULT_ENV, { ...DEFAULT_ASSUMPTIONS, skillVsNormalRatio: 1 });
     expect(ratio0.girl).toBeGreaterThan(ratio1.girl); // 평타 200% > 스킬 100%

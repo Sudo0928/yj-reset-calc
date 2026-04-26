@@ -66,9 +66,9 @@ describe('calcHourly — 시간당 자원 시뮬', () => {
     expect(r.researchHoursPer1h).toBeCloseTo(2);
   });
 
-  it('방치 보상 시간 150%면 24h × 1.5 = 36h 가치', () => {
+  it('방치 보상 시간 36시간이면 24h 풀방치 대비 1.5배', () => {
     const r = calcHourly({
-      stats: { ...DEFAULT_STATS, idleRewardTime: 150 },
+      stats: { ...DEFAULT_STATS, idleRewardTime: 36 },
       env: DEFAULT_ENV,
       mode: 'measured',
       hoursPerDay: 24,

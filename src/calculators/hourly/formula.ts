@@ -62,8 +62,10 @@ export function calcHourly(input: HourlyInput, assumptions: AssumptionsInput = D
   const researchHoursPer1h = redPct >= 100 ? 0 : 1 / (1 - redPct / 100);
 
   // ─── 방치 보상 ──────────────────────────────────────────
-  const idleRewardMultiplier = (stats.idleRewardTime ?? 100) / 100;
-  const idleRewardHoursValue = 24 * idleRewardMultiplier;
+  // idleRewardTime은 '하루 받을 수 있는 방치 보상 시간(시간 단위)' — 24시간 풀방치 대비 배율
+  const idleRewardHours = stats.idleRewardTime ?? 24;
+  const idleRewardMultiplier = idleRewardHours / 24;
+  const idleRewardHoursValue = idleRewardHours;
 
   // ─── 누적 시뮬 (1, 6, 12, 24, 48, 72, 168 시간) ────────
   const checkpoints = [1, 6, 12, 24, 48, 72, 168];
