@@ -245,27 +245,3 @@ export function calcCostumeUpgrade(input: CostumeUpgradeInput): CostumeUpgradeRe
   return { shardsNeeded, canAfford, attackGainPct, hpGainPct, levelsAchievable, summary };
 }
 
-// ─── 하트 ↔ 카드뽑 환산 (Phase 12.4) ─────────────────────
-
-import { HEART_RATES, heartsToPulls } from '@/data/hearts';
-
-export interface HeartConversionInput {
-  hearts: number;
-  diamonds: number;
-}
-
-export interface HeartConversionResult {
-  pullsFromHearts: number;
-  pullsFromDia: number;
-  effectiveDiaSavings: number; // 하트 사용 시 절약 다이아
-  summary: string;
-}
-
-export function calcHeartConversion(input: HeartConversionInput): HeartConversionResult {
-  const pullsFromHearts = heartsToPulls(input.hearts);
-  const pullsFromDia = Math.floor(input.diamonds / EXCHANGE_RATE.summonTicket);
-  // 하트로 뽑은 횟수만큼 다이아를 안 써도 됨 — 절약 = pullsFromHearts × 76다이아
-  const effectiveDiaSavings = pullsFromHearts * EXCHANGE_RATE.summonTicket;
-  const summary = `하트 ${input.hearts.toLocaleString()}개 → ${pullsFromHearts}뽑 (${HEART_RATES.cardPullCost}하트/뽑) · 다이아 ${input.diamonds.toLocaleString()}개로는 ${pullsFromDia}뽑 가능. 하트 사용 시 ${effectiveDiaSavings.toLocaleString()}다이아 절약`;
-  return { pullsFromHearts, pullsFromDia, effectiveDiaSavings, summary };
-}

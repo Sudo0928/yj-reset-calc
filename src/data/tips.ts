@@ -169,20 +169,6 @@ export const TIPS: Tip[] = [
     source: { author: 'YUI 외', date: '2026-03-08', url: 'https://game.naver.com/lounge/reworld/board/9' },
   },
   {
-    id: 'heart-vs-dia',
-    category: '효율',
-    title: '깡다이아 vs 하트 카드뽑',
-    summary: '하트 사용이 다이아 절약',
-    body: [
-      '카드뽑 1회 = 10 하트 또는 76다이아',
-      '광고제거 패키지: 하트 1:1 = 1다이아 → 카드뽑 10다이아 가치',
-      '깡 다이아샵: 하트 3:1 = 3다이아 → 카드뽑 30다이아 가치',
-      '하트로 뽑기 vs 깡다이아 환산: 광제 시 7.6배 효율',
-      '하트가 쌓이면 우선 사용, 다이아는 골드/달빛에 투자',
-    ],
-    source: { author: '존버', date: '2026-03-14', url: 'https://game.naver.com/lounge/reworld/board/detail/7414201' },
-  },
-  {
     id: 'idle-strategy',
     category: '운영',
     title: '99스테 주차 vs 100스테 무한 vs 90스테 등반',

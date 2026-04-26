@@ -33,7 +33,7 @@ const CALC_CARDS: PhaseCard[] = [
   {
     group: 'calc',
     title: '자원 의사결정',
-    description: '다이아 N개 ROI · 신화 버프 BEP · 재등반 비교 · VIP팩/룬/코스튬/하트 환산',
+    description: '다이아 N개 ROI · 신화 버프 BEP · 재등반 비교 · VIP팩/룬/코스튬 환산',
     to: '/decisions',
     badge: 'Phase 9',
     badgeVariant: 'sky',

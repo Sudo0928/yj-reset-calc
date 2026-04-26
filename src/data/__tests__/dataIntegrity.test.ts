@@ -4,7 +4,6 @@ import { COSTUMES, LEVELUP_GAIN_BY_GRADE } from '@/data/costumes';
 import { RUNE_COST_BY_GRADE, RUNE_LOCK_MULTIPLIER } from '@/data/runes';
 import { totalRuneCost } from '@/data/companionTraits';
 import { vipPackTotalValue, VIP_PACK } from '@/data/vipPack';
-import { heartsToPulls, heartsToDiamonds, HEART_RATES } from '@/data/hearts';
 
 describe('bossDespair14 — 100층 데이터 정합성', () => {
   it('정확히 100개 층 정의됨', () => {
@@ -104,20 +103,3 @@ describe('vipPack — 30일 누적 가치', () => {
   });
 });
 
-describe('hearts — 환율 환산', () => {
-  it('100 하트 = 10 뽑기 (10 하트/뽑)', () => {
-    expect(heartsToPulls(100)).toBe(10);
-  });
-
-  it('1 하트 = 1 다이아 (광제 시)', () => {
-    expect(heartsToDiamonds(100, false)).toBe(100);
-  });
-
-  it('1 하트 = 3 다이아 (깡)', () => {
-    expect(heartsToDiamonds(100, true)).toBe(300);
-  });
-
-  it('카드뽑 1회는 10 하트', () => {
-    expect(HEART_RATES.cardPullCost).toBe(10);
-  });
-});

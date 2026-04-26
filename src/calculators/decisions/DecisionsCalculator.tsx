@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import {
   calcDiamondAllocation, calcBuffBep, calcReclimb,
-  calcVipPackValue, calcRuneRoi, calcCostumeUpgrade, calcHeartConversion,
-  type RuneRoiInput, type CostumeUpgradeInput, type HeartConversionInput,
+  calcVipPackValue, calcRuneRoi, calcCostumeUpgrade,
+  type RuneRoiInput, type CostumeUpgradeInput,
 } from './formula';
 import {
   DEFAULT_DIAMOND_INPUT, DEFAULT_BUFF_BEP_INPUT, DEFAULT_RECLIMB_INPUT,
@@ -176,14 +176,10 @@ function PacksTab() {
   const [costumeInput, setCostumeInput] = useState<CostumeUpgradeInput>({
     grade: 'R', currentLevel: 1, targetLevel: 10, ownedShards: 70,
   });
-  const [heartInput, setHeartInput] = useState<HeartConversionInput>({
-    hearts: 1000, diamonds: 1000,
-  });
 
   const vip = useMemo(() => calcVipPackValue(), []);
   const runeR = useMemo(() => calcRuneRoi(runeInput), [runeInput]);
   const costumeR = useMemo(() => calcCostumeUpgrade(costumeInput), [costumeInput]);
-  const heartR = useMemo(() => calcHeartConversion(heartInput), [heartInput]);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 12 }}>
@@ -240,17 +236,6 @@ function PacksTab() {
         <Row label="생명력 +%" value={`+${costumeR.hpGainPct.toFixed(1)}%`} />
       </PixelCard>
 
-      {/* 하트 환산 */}
-      <PixelCard title="하트 ↔ 카드뽑 환산">
-        <PixelInput label="보유 하트" type="number" value={String(heartInput.hearts)} onChange={(e) => setHeartInput((p) => ({ ...p, hearts: parseInt(e.target.value) || 0 }))} />
-        <PixelInput label="보유 다이아" type="number" value={String(heartInput.diamonds)} onChange={(e) => setHeartInput((p) => ({ ...p, diamonds: parseInt(e.target.value) || 0 }))} />
-        <Row label="하트로 뽑기" value={`${heartR.pullsFromHearts}뽑`} />
-        <Row label="다이아로 뽑기" value={`${heartR.pullsFromDia}뽑`} />
-        <Row label="하트 사용 시 절약" value={`${heartR.effectiveDiaSavings.toLocaleString()}다이아`} highlight />
-        <p style={{ fontSize: 10, color: 'var(--color-ink-muted)', marginTop: 6, lineHeight: 1.6 }}>
-          하트 1:1 = 1다이아 (광고제거 패키지 시) · 깡 3:1 = 3다이아
-        </p>
-      </PixelCard>
     </div>
   );
 }
