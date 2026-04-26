@@ -213,7 +213,7 @@ export function calcRuneRoi(input: RuneRoiInput): RuneRoiResult {
 
 // ─── 코스튬 강화 ROI (Phase 12.4) ────────────────────────
 
-import { LEVELUP_GAIN_BY_GRADE, LEVELUP_PER_SHARDS } from '@/data/costumes';
+import { LEVELUP_GAIN_BY_GRADE, costumeShardCost, levelupCost, breakthroughCount } from '@/data/costumes';
 
 export interface CostumeUpgradeInput {
   grade: 'R' | 'SR' | 'SSR';
@@ -224,6 +224,7 @@ export interface CostumeUpgradeInput {
 
 export interface CostumeUpgradeResult {
   shardsNeeded: number;
+  breakthroughsNeeded: number;
   canAfford: boolean;
   attackGainPct: number;
   hpGainPct: number;
@@ -233,15 +234,23 @@ export interface CostumeUpgradeResult {
 
 export function calcCostumeUpgrade(input: CostumeUpgradeInput): CostumeUpgradeResult {
   const levels = Math.max(0, input.targetLevel - input.currentLevel);
-  const shardsNeeded = levels * LEVELUP_PER_SHARDS;
+  const shardsNeeded = costumeShardCost(input.grade, input.currentLevel, input.targetLevel);
+  const breakthroughsNeeded = breakthroughCount(input.currentLevel, input.targetLevel);
   const gain = LEVELUP_GAIN_BY_GRADE[input.grade];
   const canAfford = input.ownedShards >= shardsNeeded;
-  const levelsAchievable = canAfford ? levels : Math.floor(input.ownedShards / LEVELUP_PER_SHARDS);
+  let used = 0, lv = input.currentLevel;
+  while (lv < input.targetLevel) {
+    const cost = levelupCost(input.grade, lv);
+    if (used + cost > input.ownedShards) break;
+    used += cost; lv++;
+  }
+  const levelsAchievable = lv - input.currentLevel;
   const attackGainPct = levelsAchievable * gain.attackPct;
   const hpGainPct = levelsAchievable * gain.hpPct;
+  const brkStr = breakthroughsNeeded > 0 ? ` · 돌파 ${breakthroughsNeeded}회 필요` : '';
   const summary = canAfford
-    ? `${input.grade} 코스튬 +${levels}레벨 강화: 빛파편 ${shardsNeeded}개 → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`
-    : `보유 빛파편 부족. ${levelsAchievable}레벨만 강화 가능 → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`;
-  return { shardsNeeded, canAfford, attackGainPct, hpGainPct, levelsAchievable, summary };
+    ? `${input.grade} 코스튬 +${levels}레벨: 빛파편 ${shardsNeeded.toLocaleString()}개${brkStr} → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`
+    : `보유 빛파편 부족. ${levelsAchievable}레벨 강화 가능 → 공격력 +${attackGainPct.toFixed(1)}% / 생명력 +${hpGainPct.toFixed(1)}%`;
+  return { shardsNeeded, breakthroughsNeeded, canAfford, attackGainPct, hpGainPct, levelsAchievable, summary };
 }
 

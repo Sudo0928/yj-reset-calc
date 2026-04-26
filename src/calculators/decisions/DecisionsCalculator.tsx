@@ -174,7 +174,7 @@ function PacksTab() {
     goldPerMinMeasured: env.measuredGoldPerMin || 100_000,
   });
   const [costumeInput, setCostumeInput] = useState<CostumeUpgradeInput>({
-    grade: 'R', currentLevel: 1, targetLevel: 10, ownedShards: 70,
+    grade: 'R', currentLevel: 1, targetLevel: 10, ownedShards: 0,
   });
 
   const vip = useMemo(() => calcVipPackValue(), []);
@@ -229,8 +229,9 @@ function PacksTab() {
         />
         <PixelInput label="현재 레벨" type="number" value={String(costumeInput.currentLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, currentLevel: parseInt(e.target.value) || 1 }))} />
         <PixelInput label="목표 레벨" type="number" value={String(costumeInput.targetLevel)} onChange={(e) => setCostumeInput((p) => ({ ...p, targetLevel: parseInt(e.target.value) || 1 }))} />
-        <PixelInput label="보유 빛의파편" type="number" value={String(costumeInput.ownedShards)} onChange={(e) => setCostumeInput((p) => ({ ...p, ownedShards: parseInt(e.target.value) || 0 }))} suffix="개" hint="1레벨당 7개" />
-        <Row label="필요 파편" value={`${costumeR.shardsNeeded}개`} />
+        <PixelInput label="보유 빛의파편" type="number" value={String(costumeInput.ownedShards)} onChange={(e) => setCostumeInput((p) => ({ ...p, ownedShards: parseInt(e.target.value) || 0 }))} suffix="개" hint="Lv n 비용: SSR=15n→18n→21n… (100레벨마다 배율 +3)" />
+        <Row label="필요 파편" value={`${costumeR.shardsNeeded.toLocaleString()}개`} />
+        {costumeR.breakthroughsNeeded > 0 && <Row label="필요 돌파" value={`${costumeR.breakthroughsNeeded}회`} />}
         <Row label="가능 레벨" value={`${costumeR.levelsAchievable}레벨`} />
         <Row label="공격력 +%" value={`+${costumeR.attackGainPct.toFixed(1)}%`} highlight />
         <Row label="생명력 +%" value={`+${costumeR.hpGainPct.toFixed(1)}%`} />

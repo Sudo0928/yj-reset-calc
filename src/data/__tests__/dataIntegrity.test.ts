@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { BOSS_DESPAIR_14, getBossStage, bossHpAsNumber, bossDamageAsNumber } from '@/data/bossDespair14';
-import { COSTUMES, LEVELUP_GAIN_BY_GRADE } from '@/data/costumes';
+import { COSTUMES, LEVELUP_GAIN_BY_GRADE, costumeShardCost, levelupCost } from '@/data/costumes';
 import { RUNE_COST_BY_GRADE, RUNE_LOCK_MULTIPLIER } from '@/data/runes';
 import { totalRuneCost } from '@/data/companionTraits';
 import { vipPackTotalValue, VIP_PACK } from '@/data/vipPack';
@@ -57,6 +57,27 @@ describe('costumes — 등급별 레벨업 효율', () => {
     const r = LEVELUP_GAIN_BY_GRADE.R.attackPct + LEVELUP_GAIN_BY_GRADE.R.hpPct;
     const sr = LEVELUP_GAIN_BY_GRADE.SR.attackPct + LEVELUP_GAIN_BY_GRADE.SR.hpPct;
     expect(sr).toBeGreaterThan(r);
+  });
+});
+
+describe('costumes — 레벨업 비용 공식 (SSR 실측값)', () => {
+  it('SSR Lv1→2 = 15 (3×5×1)', () => {
+    expect(costumeShardCost('SSR', 1, 2)).toBe(15);
+  });
+  it('SSR Lv99→100 = 1485 (3×5×99)', () => {
+    expect(costumeShardCost('SSR', 99, 100)).toBe(1485);
+  });
+  it('SSR Lv100→101 = 1800 (3×6×100, 1돌파 후)', () => {
+    expect(costumeShardCost('SSR', 100, 101)).toBe(1800);
+  });
+  it('SSR Lv101→102 = 1818 (3×6×101)', () => {
+    expect(costumeShardCost('SSR', 101, 102)).toBe(1818);
+  });
+  it('SSR Lv307→308 = 7368 (3×8×307, 3돌파 후)', () => {
+    expect(costumeShardCost('SSR', 307, 308)).toBe(7368);
+  });
+  it('levelupCost SSR n=100 → 1800', () => {
+    expect(levelupCost('SSR', 100)).toBe(1800);
   });
 });
 
